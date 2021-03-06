@@ -48,7 +48,7 @@ func main() {
 		router,
 		email.NewEmailService(cfg.SendGridKey),
 		c,
-		alerts.NewDiscordAlerter(c, cfg.RegisterWebhook),
+		alerts.NewDiscordAlerter(c, cfg.WHConf.RegisterWebhook),
 	)
 
 	// Start the servers and listen
