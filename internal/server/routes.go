@@ -1,8 +1,7 @@
-package server
+package authentication
 
 import "net/http"
 
-func (s *exampleService) routes() {
-	// GET an example
-	s.router.HandleFunc("/api/example", s.ExampleMethod).Methods(http.MethodGet)
+func (s *authService) routes() {
+	s.router.HandleFunc("/api/authentication/", s.Register).Methods(http.MethodPost)
 }

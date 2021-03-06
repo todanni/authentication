@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/todanni/template-repository/internal/config"
+	"github.com/todanni/authentication/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

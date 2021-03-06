@@ -6,11 +6,13 @@ import (
 
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"github.com/todanni/template-repository/internal/config"
-	"github.com/todanni/template-repository/internal/database"
-	"github.com/todanni/template-repository/internal/repository"
-	"github.com/todanni/template-repository/internal/server"
-	"github.com/todanni/template-repository/pkg/example"
+	"github.com/todanni/alerts"
+	"github.com/todanni/authentication/internal/config"
+	"github.com/todanni/authentication/internal/database"
+	"github.com/todanni/authentication/internal/repository"
+	authentication "github.com/todanni/authentication/internal/server"
+	"github.com/todanni/authentication/pkg/auth"
+	"github.com/todanni/email"
 )
 
 func main() {
@@ -29,17 +31,26 @@ func main() {
 	}
 
 	// Perform any migrations needed to run the service
-	err = db.AutoMigrate(&example.Example{})
+	err = db.AutoMigrate(&auth.AuthenticationDetails{})
 	if err != nil {
 		log.Error(err)
 	}
 
 	// Initialise router
-	r := mux.NewRouter()
+	router := mux.NewRouter()
 
-	// Create servers by passing DB connection and router
-	server.NewExampleService(repository.NewRepository(db), r)
+	// Initialise HTTP client
+	c := &http.Client{}
+
+	// Create the service
+	authentication.NewAuthService(
+		repository.NewAuthRepository(db),
+		router,
+		email.NewEmailService(cfg.SendGridKey),
+		c,
+		alerts.NewDiscordAlerter(c, cfg.RegisterWebhook),
+	)
 
 	// Start the servers and listen
-	log.Fatal(http.ListenAndServe(":8083", r))
+	log.Fatal(http.ListenAndServe(":8083", router))
 }
