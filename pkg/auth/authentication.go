@@ -5,9 +5,9 @@ import (
 )
 
 type AuthenticationDetails struct {
-	AccountID uint   `json:"userID" gorm:"primaryKey,autoIncrement,unique,not null"`
+	AccountID uint   `json:"accountID" gorm:"primaryKey,autoIncrement,unique,not null"`
 	Email     string `json:"email" gorm:"not null,unique"`
-	Password  string `json:"password" gorm:"not null"`
+	Password  string `json:"-" gorm:"not null"`
 	Verified  bool   `json:"verified" gorm:"default:false"`
 }
 

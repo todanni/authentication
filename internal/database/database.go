@@ -13,7 +13,8 @@ func Open(cfg config.Config) (*gorm.DB, error) {
 	// Make connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		cfg.DBConf.DBHost, cfg.DBConf.DBPort, cfg.DBConf.DBUser, cfg.DBConf.DBPassword, cfg.DBConf.DBName)
+		//cfg.DBConf.DBHost, cfg.DBConf.DBPort, cfg.DBConf.DBUser, cfg.DBConf.DBPassword, cfg.DBConf.DBName)
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
