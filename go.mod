@@ -6,6 +6,8 @@ require (
 	github.com/caarlos0/env/v6 v6.5.0
 	github.com/docker/go-connections v0.4.0
 	github.com/gorilla/mux v1.8.0
+	github.com/jackc/pgx/v4 v4.10.1
+	github.com/lib/pq v1.3.0
 	github.com/sirupsen/logrus v1.8.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.0

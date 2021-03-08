@@ -2,8 +2,7 @@ package repository
 
 import (
 	"context"
-	"testing"
-
+	_ "github.com/lib/pq" // here
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/todanni/authentication/pkg/auth"
@@ -11,6 +10,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"testing"
 )
 
 type AuthenticationTestSuite struct {
@@ -43,7 +43,7 @@ func (suite *AuthenticationTestSuite) TestInsert() {
 	assert.Equal(suite.T(), created.Email, "test@email.com")
 	assert.Equal(suite.T(), created.Password, "Password123")
 	assert.Equal(suite.T(), created.Verified, false)
-	assert.NotEmpty(suite.T(), created.AccountID)
+	assert.Equal(suite.T(), created.AccountID, uint(0))
 }
 
 func (suite *AuthenticationTestSuite) SetupSuite() {
@@ -60,6 +60,11 @@ func (suite *AuthenticationTestSuite) SetupSuite() {
 	db, err := gorm.Open(postgres.Open(connection), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
+
+	// Do migrations
+	err = db.AutoMigrate(&auth.AuthenticationDetails{})
+	assert.NoError(suite.T(), err)
+
 	suite.db = db
 
 	suite.cleanupDatabase()

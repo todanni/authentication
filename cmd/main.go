@@ -48,7 +48,6 @@ func main() {
 		router,
 		email.NewEmailService(cfg.SendGridKey),
 		c,
-		//alerts.NewDiscordAlerter(c, cfg.WHConf.RegisterWebhook),
 		alerts.NewDiscordAlerter(c, cfg.RegisterWebhook),
 	)
 

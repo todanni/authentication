@@ -2,8 +2,6 @@ package container
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base32"
 	"fmt"
 	"time"
 
@@ -25,9 +23,7 @@ const (
 // NewPGContainer creates a new container running PG and blocks until it is ready to use.
 func NewPGContainer(db string) (*PgContainer, error) {
 	ctx := context.Background()
-
 	credentials := newCredentials()
-
 	req := testcontainers.ContainerRequest{
 		Image:        "postgres",
 		ExposedPorts: []string{"54325:5432"},
@@ -61,21 +57,4 @@ func (p *PgContainer) ConnectionString() (string, error) {
 	}
 
 	return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", p.username, p.password, endpoint, p.db), nil
-}
-
-type credentials struct {
-	username string
-	password string
-}
-
-func newCredentials() credentials {
-	randomBytes := make([]byte, 32)
-	_, _ = rand.Read(randomBytes)
-
-	pw := base32.StdEncoding.EncodeToString(randomBytes)[:20]
-
-	return credentials{
-		username: "integration_tests",
-		password: pw,
-	}
 }
