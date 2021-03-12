@@ -10,8 +10,8 @@ import (
 	"github.com/todanni/authentication/internal/config"
 	"github.com/todanni/authentication/internal/database"
 	"github.com/todanni/authentication/internal/repository"
-	authentication "github.com/todanni/authentication/internal/server"
-	"github.com/todanni/authentication/pkg/auth"
+	"github.com/todanni/authentication/internal/service"
+	"github.com/todanni/authentication/pkg/account"
 	"github.com/todanni/email"
 )
 
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// Perform any migrations needed to run the service
-	err = db.AutoMigrate(&auth.AuthenticationDetails{})
+	err = db.AutoMigrate(&account.AuthDetails{}, &account.VerificationRecord{})
 	if err != nil {
 		log.Error(err)
 	}
@@ -42,9 +42,9 @@ func main() {
 	// Initialise HTTP client
 	c := &http.Client{}
 
-	// Create the service
-	authentication.NewAuthService(
-		repository.NewAuthRepository(db),
+	// Create services
+	service.NewService(
+		repository.NewRepository(db),
 		router,
 		email.NewEmailService(cfg.SendGridKey),
 		c,

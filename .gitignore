@@ -856,3 +856,13 @@
 /vendor/gorm.io/gorm/statement.go
 /vendor/gorm.io/gorm/utils/utils.go
 /vendor/modules.txt
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437.xml
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ.meta
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.meta
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.zip
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.meta
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.zip
+/.idea/dataSources/50a38cfa-ce15-4f57-a30f-a5ec97398437/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta
+/.idea/sqldialects.xml
+/.idea/vcs.xml
+/.idea/watcherTasks.xml
