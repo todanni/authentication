@@ -7,9 +7,11 @@ import (
 	"math/rand"
 	"net/http"
 
-	"golang.org/x/crypto/bcrypt"
-
+	log "github.com/sirupsen/logrus"
+	"github.com/todanni/alerts"
 	"github.com/todanni/authentication/pkg/account"
+	"github.com/todanni/email"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *service) Register(w http.ResponseWriter, r *http.Request) {
@@ -24,11 +26,29 @@ func (s *service) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 
+	err = s.alerter.SendRegisterAlert(alerts.RegisterRequest{Email: createdAcc.AuthDetails.Email})
+	if err != nil {
+		log.Error(err)
+	}
+
 	// Create verification record in the DB
-	_, err = s.repo.InsertVerificationRecord(account.VerificationRecord{
+	rec, err := s.repo.InsertVerificationRecord(account.VerificationRecord{
 		AccountID: createdAcc.ID,
 		Code:      s.generateCode(),
 	})
+	if err != nil {
+		log.Error("failed to create verification record", err)
+		return
+	}
+
+	// Send verification email
+	err = s.email.SendVerificationEmail(rec.Code, email.Recipient{
+		Email:    createdAcc.AuthDetails.Email,
+		FullName: createdAcc.FirstName + " " + createdAcc.LastName,
+	})
+	if err != nil {
+		log.Error(err)
+	}
 
 	// Write response
 	w.Header().Set("Content-Type", "application/json")

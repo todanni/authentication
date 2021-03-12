@@ -7,10 +7,10 @@ import (
 )
 
 type Account struct {
-	FirstName      string      `json:"first_name"`
-	LastName       string      `json:"last_name"`
-	ProfilePicture string      `json:"profile_picture"`
-	JobTitle       string      `json:"job_title"`
+	FirstName      string      `json:"firstName"`
+	LastName       string      `json:"lastName"`
+	ProfilePicture string      `json:"profilePicture"`
+	JobTitle       string      `json:"jobTitle"`
 	AuthDetails    AuthDetails `json:"-" gorm:"foreignKey:account_id"`
 	gorm.Model
 }

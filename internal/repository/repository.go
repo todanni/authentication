@@ -15,7 +15,7 @@ func NewRepository(db *gorm.DB) account.Repository {
 	r := &repo{
 		db: db,
 	}
-	r.runMigrations()
+	//r.runMigrations()
 	return r
 }
 

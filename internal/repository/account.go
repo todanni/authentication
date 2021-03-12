@@ -7,3 +7,8 @@ func (r repo) GetAccount(id int) (account.Account, error) {
 	err := r.db.First(&acc, id).Error
 	return account.Account{}, err
 }
+
+func (r repo) InsertAccount(acc account.Account) (account.Account, error) {
+	err := r.db.Create(&acc).Error
+	return acc, err
+}
