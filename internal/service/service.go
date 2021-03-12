@@ -34,9 +34,18 @@ func NewService(repo account.Repository, router *mux.Router, email email.Service
 }
 
 func (s *service) routes() {
-	// Register endpoint
-	s.router.HandleFunc("/api/authentication/", s.Register).Methods(http.MethodPost)
+	// TODO: Define middlewares
+	s.router.PathPrefix("/api/account")
+
+	// Account registration endpoint
+	s.router.HandleFunc("/api/account/register", s.Register).Methods(http.MethodPost)
 
 	// Account verification endpoint
-	s.router.HandleFunc("/verify/:code", s.Verify).Methods(http.MethodGet)
+	s.router.HandleFunc("/api/account/verify/:code", s.Verify).Methods(http.MethodGet)
+
+	// Account authentication endpoint
+	s.router.HandleFunc("/api/account/auth", s.Login).Methods(http.MethodPost)
+
+	// Account password reset endpoint
+	s.router.HandleFunc("/api/account/password-reset", s.ResetPassword).Methods(http.MethodPost)
 }

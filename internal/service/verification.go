@@ -1,7 +1,6 @@
 package service
 
 import (
-	"math/rand"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,7 +19,7 @@ func (s service) Verify(w http.ResponseWriter, r *http.Request) {
 	// at the end, we should return a valid token
 }
 
-func (s service) Generate(accountID int) (string, error) {
+func (s service) generate(accountID int) (string, error) {
 	panic("")
 	//
 	//record, err := s.repo.InsertAuthenticationDetails(account.VerificationRecord{
@@ -32,12 +31,4 @@ func (s service) Generate(accountID int) (string, error) {
 	//}
 	//
 	//return record.Code, err
-}
-
-func (s service) generateCode() string {
-	b := make([]rune, 10)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }

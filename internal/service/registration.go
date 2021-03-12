@@ -2,65 +2,78 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 
-	"github.com/todanni/authentication/pkg/account"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/todanni/alerts"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/todanni/authentication/pkg/account"
 )
 
 func (s *service) Register(w http.ResponseWriter, r *http.Request) {
+	acc, err := s.validateRegisterRequest(r)
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+	}
+
+	// Create account record in the DB
+	createdAcc, err := s.repo.InsertAccount(acc)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+
+	// Create verification record in the DB
+	_, err = s.repo.InsertVerificationRecord(account.VerificationRecord{
+		AccountID: createdAcc.ID,
+		Code:      s.generateCode(),
+	})
+
+	// Write response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *service) validateRegisterRequest(r *http.Request) (account.Account, error) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Error(err)
-		return
+		return account.Account{}, err
+	}
+
+	if reqBody == nil {
+		return account.Account{}, errors.New("body was empty")
 	}
 
 	var registerRequest account.Request
 	err = json.Unmarshal(reqBody, &registerRequest)
 	if err != nil {
-		log.Error("couldn't unmarshal", err)
-		http.Error(w, "Internal Server Error", http.StatusBadRequest)
-		return
+		return account.Account{}, err
+	}
+
+	if registerRequest.Password == "" {
+		return account.Account{}, errors.New("password was empty")
 	}
 
 	pass, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), 14)
 	if err != nil {
-		log.Error(err)
-		return
+		return account.Account{}, err
 	}
 
-	// Save details in DB
-	returnedAuthDetails, err := s.repo.InsertAuthDetails(account.AuthDetails{
-		Email:    registerRequest.Email,
-		Password: string(pass),
-	})
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	return account.Account{
+		FirstName: registerRequest.FirstName,
+		LastName:  registerRequest.LastName,
+		AuthDetails: account.AuthDetails{
+			Email:    registerRequest.Email,
+			Password: string(pass),
+		},
+	}, err
+}
 
-	req := alerts.RegisterRequest{Email: registerRequest.Email}
-	err = s.alerter.SendRegisterAlert(req)
-	if err != nil {
-		log.Error(err)
+func (s service) generateCode() string {
+	b := make([]rune, 10)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
 	}
-
-	// TODO: send create request to verification service
-	// needs AccountID
-
-	marshalled, err := json.Marshal(returnedAuthDetails)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(marshalled)
-	if err != nil {
-		log.Error(err)
-	}
+	return string(b)
 }
