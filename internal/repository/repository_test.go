@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	_ "github.com/lib/pq" // here
@@ -42,7 +43,7 @@ func (suite *AccountRepoTestSuite) TestInsertAccount() {
 	}
 
 	created, err := repo.InsertAccount(acc)
-	assert.NoError(suite.T(), err)
+	require.NoError(suite.T(), err)
 
 	// Verify values
 	assert.Equal(suite.T(), created.FirstName, acc.FirstName)
@@ -64,11 +65,11 @@ func (suite *AccountRepoTestSuite) SetupSuite() {
 	db, err := gorm.Open(postgres.Open(connection), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
-	assert.NoError(suite.T(), err)
+	require.NoError(suite.T(), err)
 
 	// Do migrations
 	err = db.AutoMigrate(&account.Account{})
-	assert.NoError(suite.T(), err)
+	require.NoError(suite.T(), err)
 
 	suite.db = db
 	suite.cleanupDatabase()

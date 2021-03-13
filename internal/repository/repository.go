@@ -15,12 +15,12 @@ func NewRepository(db *gorm.DB) account.Repository {
 	r := &repo{
 		db: db,
 	}
-	//r.runMigrations()
+	r.runMigrations()
 	return r
 }
 
-func (r repo) runMigrations() {
-	err := r.db.AutoMigrate(&account.Account{}, &account.AuthDetails{}, &account.VerificationRecord{})
+func (r *repo) runMigrations() {
+	err := r.db.AutoMigrate(&account.Account{})
 	if err != nil {
 		fmt.Println(err.Error())
 	}

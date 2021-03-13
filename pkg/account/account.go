@@ -40,11 +40,14 @@ type Repository interface {
 	UpdateAuthDetails(details AuthDetails) (AuthDetails, error)
 
 	// GetAuthDetails
-	GetAuthDetails(userID int) (AuthDetails, error)
+	GetAuthDetails(email string) (AuthDetails, error)
 
 	// InsertVerificationRecord
 	InsertVerificationRecord(record VerificationRecord) (VerificationRecord, error)
 
 	// GetVerificationRecord
 	GetVerificationRecord(accountID int) (VerificationRecord, error)
+
+	// UpdateVerificationRecord
+	UpdateVerificationRecord(code string) (VerificationRecord, error)
 }

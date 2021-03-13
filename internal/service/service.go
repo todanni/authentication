@@ -29,14 +29,11 @@ func NewService(repo account.Repository, router *mux.Router, email email.Service
 		client:  client,
 		alerter: alerter,
 	}
-	//s.routes()
+	s.routes()
 	return s
 }
 
 func (s *service) routes() {
-	// TODO: Define middlewares
-	s.router.PathPrefix("/api/account")
-
 	// Account registration endpoint
 	s.router.HandleFunc("/api/account/register", s.Register).Methods(http.MethodPost)
 

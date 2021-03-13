@@ -18,15 +18,21 @@ func (s *service) Register(w http.ResponseWriter, r *http.Request) {
 	acc, err := s.validateRegisterRequest(r)
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
 	}
 
 	// Create account record in the DB
 	createdAcc, err := s.repo.InsertAccount(acc)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
-	err = s.alerter.SendRegisterAlert(alerts.RegisterRequest{Email: createdAcc.AuthDetails.Email})
+	// Send Discord alert
+	err = s.alerter.SendRegisterAlert(alerts.RegisterRequest{
+		FullName: createdAcc.FirstName + " " + createdAcc.LastName,
+		Email:    createdAcc.AuthDetails.Email,
+	})
 	if err != nil {
 		log.Error(err)
 	}
@@ -65,7 +71,7 @@ func (s *service) validateRegisterRequest(r *http.Request) (account.Account, err
 		return account.Account{}, errors.New("body was empty")
 	}
 
-	var registerRequest account.Request
+	var registerRequest account.RegisterRequest
 	err = json.Unmarshal(reqBody, &registerRequest)
 	if err != nil {
 		return account.Account{}, err
