@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/todanni/alerts"
@@ -90,7 +91,7 @@ func (s *service) validateRegisterRequest(r *http.Request) (account.Account, err
 		FirstName: registerRequest.FirstName,
 		LastName:  registerRequest.LastName,
 		AuthDetails: account.AuthDetails{
-			Email:    registerRequest.Email,
+			Email:    strings.ToLower(registerRequest.Email),
 			Password: string(pass),
 		},
 	}, err

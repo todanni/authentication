@@ -38,7 +38,7 @@ func (s *service) routes() {
 	s.router.HandleFunc("/api/account/register", s.Register).Methods(http.MethodPost)
 
 	// Account verification endpoint
-	s.router.HandleFunc("/api/account/verify/:code", s.Verify).Methods(http.MethodGet)
+	s.router.HandleFunc("/api/account/verify/{code}", s.Verify).Methods(http.MethodGet)
 
 	// Account authentication endpoint
 	s.router.HandleFunc("/api/account/auth", s.Login).Methods(http.MethodPost)

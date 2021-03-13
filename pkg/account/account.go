@@ -46,8 +46,10 @@ type Repository interface {
 	InsertVerificationRecord(record VerificationRecord) (VerificationRecord, error)
 
 	// GetVerificationRecord
-	GetVerificationRecord(accountID int) (VerificationRecord, error)
+	UpdateVerificationRecord(accountID int) (VerificationRecord, error)
 
 	// UpdateVerificationRecord
-	UpdateVerificationRecord(code string) (VerificationRecord, error)
+	GetVerificationRecordByCode(code string) (VerificationRecord, error)
+
+	SetAuthDetailsValid(accountID uint) error
 }

@@ -9,22 +9,12 @@ func (r *repo) InsertVerificationRecord(record account.VerificationRecord) (acco
 	return record, err
 }
 
-func (r *repo) GetVerificationRecord(accountID int) (account.VerificationRecord, error) {
+func (r *repo) UpdateVerificationRecord(accountID int) (account.VerificationRecord, error) {
 	panic("implement me")
 }
 
-func (r *repo) UpdateVerificationRecord(code string) (account.VerificationRecord, error) {
-	// UPDATE auth_details where account_id = ? SET verified = true
-
-
-
-	//vr := account.VerificationRecord{
-	//	AccountID: 0,
-	//	Code:      "",
-	//	Model:     gorm.Model{},
-	//}
-	//err := r.db.Where(account.VerificationRecord{Code: code}).Update("verified", true).Error
-	//return verificationRecord, err
-	panic("")
+func (r *repo) GetVerificationRecordByCode(code string) (account.VerificationRecord, error) {
+	vr := account.VerificationRecord{Code: code}
+	err := r.db.Where(&vr).Last(&vr).Error
+	return vr, err
 }
-

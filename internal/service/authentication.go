@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func (s *service) Login(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +53,7 @@ func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, er
 	}
 
 	return account.AuthDetails{
-		Email:     loginRequest.Email,
+		Email:    strings.ToLower(loginRequest.Email),
 		Password:  loginRequest.Password,
 	}, err
 }
