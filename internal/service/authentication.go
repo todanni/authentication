@@ -2,11 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/todanni/authentication/pkg/account"
-	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/todanni/authentication/pkg/account"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *service) Login(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +37,7 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, error){
+func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, error) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return account.AuthDetails{}, err
@@ -44,16 +45,16 @@ func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, er
 
 	var loginRequest account.LoginRequest
 	err = json.Unmarshal(reqBody, &loginRequest)
-	if err != nil{
+	if err != nil {
 		return account.AuthDetails{}, err
 	}
 
-	if loginRequest.Email == ""  || loginRequest.Password == ""{
+	if loginRequest.Email == "" || loginRequest.Password == "" {
 		return account.AuthDetails{}, err
 	}
 
 	return account.AuthDetails{
 		Email:    strings.ToLower(loginRequest.Email),
-		Password:  loginRequest.Password,
+		Password: loginRequest.Password,
 	}, err
 }

@@ -4,11 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
-	"github.com/todanni/authentication/pkg/account"
-
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
+	"github.com/todanni/authentication/pkg/account"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
