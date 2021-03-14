@@ -9,8 +9,6 @@ import (
 	"github.com/todanni/authentication/pkg/account"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 func (s *service) Verify(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	if code == "" {
@@ -36,6 +34,9 @@ func (s *service) Verify(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "couldn't verify account", http.StatusInternalServerError)
 		return
 	}
+
+	//TODO: Send activation alert using alerter
+
 	// Write response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

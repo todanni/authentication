@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/thanhpk/randstr"
 	"github.com/todanni/alerts"
 	"github.com/todanni/authentication/pkg/account"
 	"github.com/todanni/email"
@@ -41,7 +41,7 @@ func (s *service) Register(w http.ResponseWriter, r *http.Request) {
 	// Create verification record in the DB
 	rec, err := s.repo.InsertVerificationRecord(account.VerificationRecord{
 		AccountID: createdAcc.ID,
-		Code:      s.generateCode(),
+		Code:      randstr.Hex(10),
 	})
 	if err != nil {
 		log.Error("failed to create verification record", err)
@@ -95,12 +95,4 @@ func (s *service) validateRegisterRequest(r *http.Request) (account.Account, err
 			Password: string(pass),
 		},
 	}, err
-}
-
-func (s service) generateCode() string {
-	b := make([]rune, 10)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }

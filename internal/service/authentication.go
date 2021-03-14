@@ -2,9 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/todanni/alerts"
 
 	"github.com/todanni/authentication/pkg/account"
 	"golang.org/x/crypto/bcrypt"
@@ -25,11 +28,19 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 
 	if !authDetails.Verified {
 		http.Error(w, "please verify your email first", http.StatusForbidden)
+		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(authDetails.Password), []byte(loginRequest.Password))
 	if err != nil {
 		http.Error(w, "wrong password", http.StatusForbidden)
+		return
+	}
+
+	// Send login alert
+	err = s.alerter.SendLoginAlert(alerts.LoginRequest{Email: authDetails.Email})
+	if err != nil {
+		log.Error(err)
 	}
 
 	// TODO: generate JWT token
@@ -38,13 +49,8 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, error) {
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return account.AuthDetails{}, err
-	}
-
 	var loginRequest account.LoginRequest
-	err = json.Unmarshal(reqBody, &loginRequest)
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		return account.AuthDetails{}, err
 	}
