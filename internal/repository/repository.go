@@ -1,20 +1,27 @@
 package repository
 
 import (
-	"github.com/todanni/template-repository/pkg/example"
+	"fmt"
+
+	"github.com/todanni/authentication/pkg/account"
 	"gorm.io/gorm"
 )
 
-func NewRepository(db *gorm.DB) example.Repository  {
-	return &repository{
-		db: db,
-	}
-}
-
-type repository struct {
+type repo struct {
 	db *gorm.DB
 }
 
-func (r repository) ExampleGet() ([]example.Example, error) {
-	panic("implement me")
+func NewRepository(db *gorm.DB) account.Repository {
+	r := &repo{
+		db: db,
+	}
+	r.runMigrations()
+	return r
+}
+
+func (r *repo) runMigrations() {
+	err := r.db.AutoMigrate(&account.Account{})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }

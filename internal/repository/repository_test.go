@@ -1,58 +1,86 @@
 package repository
 
 import (
-	"reflect"
+	"context"
+	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/todanni/template-repository/pkg/example"
+	_ "github.com/lib/pq" // here
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"github.com/todanni/authentication/pkg/account"
+	"github.com/todanni/authentication/test/container"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func TestNewRepository(t *testing.T) {
-	type args struct {
-		db *gorm.DB
-	}
-	tests := []struct {
-		name string
-		args args
-		want example.Repository
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewRepository(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewRepository() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+type AccountRepoTestSuite struct {
+	suite.Suite
+	db        *gorm.DB
+	container *container.PgContainer
 }
 
-func Test_repository_ExampleGet(t *testing.T) {
-	type fields struct {
-		db *gorm.DB
+func TestRunAuthenticationTestSuite(t *testing.T) {
+	suite.Run(t, new(AccountRepoTestSuite))
+}
+
+// SetupTest runs before each test.
+func (suite *AccountRepoTestSuite) SetupTest() {
+	suite.cleanupDatabase()
+}
+
+func (suite *AccountRepoTestSuite) TestInsertAccount() {
+	repo := NewRepository(suite.db)
+
+	acc := account.Account{
+		FirstName: "First",
+		LastName:  "Last",
+		AuthDetails: account.AuthDetails{
+			Email:    "email@mail.com",
+			Password: "password",
+		},
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    []example.Example
-		wantErr bool
-	}{
-		// TODO: Add test cases.
+
+	created, err := repo.InsertAccount(acc)
+	require.NoError(suite.T(), err)
+
+	// Verify values
+	assert.Equal(suite.T(), created.FirstName, acc.FirstName)
+	assert.Equal(suite.T(), created.AuthDetails.Email, acc.AuthDetails.Email)
+	assert.Equal(suite.T(), created.AuthDetails.Password, acc.AuthDetails.Password)
+}
+
+func (suite *AccountRepoTestSuite) SetupSuite() {
+	pgContainer, err := container.NewPGContainer("database_for_it")
+	if err != nil {
+		suite.T().Fatalf("couldn't start container: %v", err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := repository{
-				db: tt.fields.db,
-			}
-			got, err := r.ExampleGet()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ExampleGet() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ExampleGet() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	suite.container = pgContainer
+
+	connection, err := pgContainer.ConnectionString()
+	assert.NoError(suite.T(), err)
+
+	db, err := gorm.Open(postgres.Open(connection), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	require.NoError(suite.T(), err)
+
+	// Do migrations
+	err = db.AutoMigrate(&account.Account{})
+	require.NoError(suite.T(), err)
+
+	suite.db = db
+	suite.cleanupDatabase()
+}
+
+func (suite *AccountRepoTestSuite) TearDownSuite() {
+	suite.cleanupDatabase()
+	assert.NoError(suite.T(), suite.container.Close(context.Background()))
+}
+
+func (suite *AccountRepoTestSuite) cleanupDatabase() {
+	//err := suite.db.Exec("DELETE FROM authentication_details")
+	//assert.NoError(suite.T(), err.Error)
 }
