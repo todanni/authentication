@@ -85,6 +85,7 @@ jobs:
         script: |
           VAULT_ADDR=${{ secrets.DEV_VAULT_ADDRESS }} VAULT_TOKEN=${{ secrets.DEV_VAULT_TOKEN }} vault kv get -format yaml -field data app/go > .env
           sed -i 's/: /=/g' .env
+          sed -i 's/"//g' .env
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p "${{ secrets.DOCKER_PASSWORD }}"
           docker pull ${{ github.repository }}:latest
           docker rm -f ${{ github.event.repository.name }} 
