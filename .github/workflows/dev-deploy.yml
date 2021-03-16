@@ -83,13 +83,13 @@ jobs:
         key: ${{ secrets.ADMIN_SSH_KEY }}
         envs:  HOST_LABEL,CERT_LABEL,TLS_LABEL
         script: |
-          rm .env
-          VAULT_ADDR=https://dev-vault.todanni.com VAULT_TOKEN=${{ secrets.DEV_VAULT_TOKEN }} vault kv get -format yaml -field data app/go > .env
+          VAULT_ADDR=${{ secrets.DEV_VAULT_ADDRESS }} VAULT_TOKEN=${{ secrets.DEV_VAULT_TOKEN }} vault kv get -format yaml -field data app/go > .env
           sed -i 's/: /=/g' .env
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p "${{ secrets.DOCKER_PASSWORD }}"
           docker pull ${{ github.repository }}:latest
           docker rm -f ${{ github.event.repository.name }} 
           docker run -d --name ${{ github.event.repository.name }} --network ${{ secrets.NETWORK }} --label "$HOST_LABEL" --label "$TLS_LABEL" --label "$CERT_LABEL" --env-file .env  ${{ github.repository }}
+          rm .env
       - 
         name: Send discord failure message
         if: ${{ failure() }}
