@@ -84,6 +84,7 @@ jobs:
         envs:  HOST_LABEL,CERT_LABEL,TLS_LABEL
         script: |
           rm .env
+          VAULT_ADDR=https://dev-vault.todanni.com
           VAULT_TOKEN=${{ secrets.DEV_VAULT_TOKEN }}
           vault kv get -format yaml -field data app/go > .env
           sed -i 's/: /=/g' .env
