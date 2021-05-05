@@ -15,12 +15,6 @@ import (
 	"github.com/todanni/email"
 )
 
-//
-//var (
-//	publicKey  string
-//	privateKey string
-//)
-
 func main() {
 	// Read config
 	cfg, err := config.NewFromEnv()
