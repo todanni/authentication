@@ -6,10 +6,9 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-
 	"github.com/todanni/alerts"
-
 	"github.com/todanni/authentication/pkg/account"
+	"github.com/todanni/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,9 +42,15 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 
-	// TODO: generate JWT token
-	w.Header().Set("Content-Type", "application/json")
+	jwt, err := token.Generate(int(authDetails.AccountID), *s.client)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    string(jwt),
+		Secure:   true,
+		SameSite: 3,
+	})
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(jwt)
 }
 
 func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, error) {

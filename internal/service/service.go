@@ -45,4 +45,5 @@ func (s *service) routes() {
 
 	// Account password reset endpoint
 	s.router.HandleFunc("/api/account/password-reset", s.ResetPassword).Methods(http.MethodPost)
+
 }
