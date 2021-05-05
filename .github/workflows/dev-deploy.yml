@@ -90,7 +90,6 @@ jobs:
           docker pull ${{ github.repository }}:latest
           docker rm -f ${{ github.event.repository.name }} 
           docker run -d --name ${{ github.event.repository.name }} --network ${{ secrets.NETWORK }} --label "$HOST_LABEL" --label "$TLS_LABEL" --label "$CERT_LABEL" --env-file .env  ${{ github.repository }}
-          rm .env
       - 
         name: Send discord failure message
         if: ${{ failure() }}
