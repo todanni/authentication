@@ -43,6 +43,8 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwt, err := token.Generate(int(authDetails.AccountID), *s.client)
+	log.Info(string(jwt))
+
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		log.Error(err)
