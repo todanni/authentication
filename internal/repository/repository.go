@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/todanni/authentication/pkg/account"
 	"gorm.io/gorm"
@@ -20,8 +20,18 @@ func NewRepository(db *gorm.DB) account.Repository {
 }
 
 func (r *repo) runMigrations() {
-	err := r.db.AutoMigrate(&account.Account{})
+	err := r.db.AutoMigrate(&account.VerificationRecord{})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err)
+	}
+
+	err = r.db.AutoMigrate(&account.AuthDetails{})
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = r.db.AutoMigrate(&account.Account{})
+	if err != nil {
+		log.Error(err)
 	}
 }
