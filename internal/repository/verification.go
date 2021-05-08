@@ -9,9 +9,10 @@ func (r *repo) InsertVerificationRecord(record account.VerificationRecord) (acco
 	return record, err
 }
 
-func (r *repo) UpdateVerificationRecord(accountID int) (account.VerificationRecord, error) {
-	panic("implement me")
-}
+//
+//func (r *repo) UpdateVerificationRecord(accountID int) (account.VerificationRecord, error) {
+//	panic("implement me")
+//}
 
 func (r *repo) GetVerificationRecordByCode(code string) (account.VerificationRecord, error) {
 	vr := account.VerificationRecord{Code: code}
