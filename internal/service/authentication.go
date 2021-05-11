@@ -2,11 +2,11 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/todanni/alerts"
 	"net/http"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/todanni/alerts"
 	"github.com/todanni/authentication/pkg/account"
 	"github.com/todanni/token"
 	"golang.org/x/crypto/bcrypt"
@@ -36,12 +36,6 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send login alert
-	err = s.alerter.SendLoginAlert(alerts.LoginRequest{Email: authDetails.Email})
-	if err != nil {
-		log.Error(err)
-	}
-
 	jwt, err := token.Generate(int(authDetails.AccountID), *s.client)
 	log.Info(string(jwt))
 
@@ -59,6 +53,12 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 	})
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(jwt)
+
+	// Send login alert
+	err = s.alerter.SendLoginAlert(alerts.LoginRequest{Email: authDetails.Email})
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, error) {

@@ -1,7 +1,9 @@
 package service
 
 import (
+	"github.com/todanni/alerts"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -34,8 +36,12 @@ func (s *service) Verify(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "couldn't verify account", http.StatusInternalServerError)
 		return
 	}
-
+	str := strconv.FormatUint(uint64(vr.AccountID), 10)
 	//TODO: Send activation alert using alerter
+	err = s.alerter.SendActivationAlert(alerts.RegisterRequest{
+		Email:    vr.Code,
+		FullName: str,
+	})
 
 	// Write response
 	w.Header().Set("Content-Type", "application/json")

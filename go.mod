@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.10.0
 	github.com/thanhpk/randstr v1.0.4
-	github.com/todanni/alerts v0.2.0
+	github.com/todanni/alerts v1.0.1
 	github.com/todanni/email v0.1.0
 	github.com/todanni/token v0.1.4
 	golang.org/x/crypto v0.0.0-20210503195802-e9a32991a82e

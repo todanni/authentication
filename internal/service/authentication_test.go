@@ -9,14 +9,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/todanni/alerts"
 	"github.com/todanni/authentication/internal/repository"
 	"github.com/todanni/authentication/pkg/account"
 	"github.com/todanni/email"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Test_service_Login(t *testing.T) {
@@ -34,9 +33,7 @@ func Test_service_Login(t *testing.T) {
 
 	alerter := alerts.MockAlerter{}
 	alerter.On("SendLoginAlert", alerts.LoginRequest{Email: "test@mail.com"}).Return(nil)
-
 	emailer := email.MockEmail{}
-
 	s := NewService(repo, mux.NewRouter(), &emailer, &http.Client{}, &alerter)
 
 	// Create request
@@ -44,11 +41,10 @@ func Test_service_Login(t *testing.T) {
 		Email:    "test@mail.com",
 		Password: "password",
 	}
-
 	postBody, err := json.Marshal(lr)
 	assert.NoError(t, err)
-	b := bytes.NewBuffer(postBody)
 
+	b := bytes.NewBuffer(postBody)
 	req, err := http.NewRequest("POST", "/api/account/auth", b)
 	assert.NoError(t, err)
 

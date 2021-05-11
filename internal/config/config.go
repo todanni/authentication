@@ -16,6 +16,10 @@ type Config struct {
 	RegisterWebhook string `env:"DISCORD_REGISTER_WEBHOOK,required"`
 
 	SendGridKey string `env:"SENDGRID_API_KEY,required"`
+
+	RMQUser     string `env:"RMQ_USER,required"`
+	RMQPassword string `env:"RMQ_PASSWORD,required"`
+	RMQHost     string `env:"RMQ_HOST,required"`
 }
 
 func NewFromEnv() (Config, error) {
