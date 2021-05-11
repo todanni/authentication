@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -42,13 +43,18 @@ func main() {
 	// Initialise HTTP client
 	c := &http.Client{}
 
+	al, err := alerts.NewAlertsPublisher(fmt.Sprintf("amqp://%s:%s@%s:5672/", cfg.RMQUser, cfg.RMQPassword, cfg.RMQHost))
+	if err != nil {
+		log.Error(err)
+	}
+
 	// Create services
 	service.NewService(
 		repository.NewRepository(db),
 		router,
 		email.NewEmailService(cfg.SendGridKey),
 		c,
-		alerts.NewDiscordAlerter(c, cfg.RegisterWebhook),
+		al,
 	)
 
 	// Start the servers and listen

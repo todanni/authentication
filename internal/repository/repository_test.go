@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	_ "github.com/lib/pq" // here
 	"github.com/stretchr/testify/assert"
@@ -31,18 +32,21 @@ func (suite *AccountRepoTestSuite) SetupTest() {
 }
 
 func (suite *AccountRepoTestSuite) TestInsertAccount() {
-	repo := NewRepository(suite.db)
+	r := NewRepository(suite.db)
 
 	acc := account.Account{
-		FirstName: "First",
-		LastName:  "Last",
+		FirstName:      "First",
+		LastName:       "Lst",
+		ProfilePicture: "http://imgur.com/happy.jpeg",
+		JobTitle:       "Software Engineer",
 		AuthDetails: account.AuthDetails{
-			Email:    "email@mail.com",
-			Password: "password",
+			Email:    "test@mail.com",
+			Password: "test",
+			Verified: false,
 		},
 	}
 
-	created, err := repo.InsertAccount(acc)
+	created, err := r.InsertAccount(acc)
 	require.NoError(suite.T(), err)
 
 	// Verify values
@@ -67,10 +71,6 @@ func (suite *AccountRepoTestSuite) SetupSuite() {
 	})
 	require.NoError(suite.T(), err)
 
-	// Do migrations
-	err = db.AutoMigrate(&account.Account{})
-	require.NoError(suite.T(), err)
-
 	suite.db = db
 	suite.cleanupDatabase()
 }
@@ -81,6 +81,5 @@ func (suite *AccountRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *AccountRepoTestSuite) cleanupDatabase() {
-	//err := suite.db.Exec("DELETE FROM authentication_details")
-	//assert.NoError(suite.T(), err.Error)
+	suite.db.Exec("DELETE FROM authentication_details")
 }
