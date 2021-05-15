@@ -2,13 +2,15 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/todanni/alerts"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/todanni/alerts"
 	"github.com/todanni/authentication/pkg/account"
-	"github.com/todanni/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -36,9 +38,7 @@ func (s *service) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwt, err := token.Generate(int(authDetails.AccountID), *s.client)
-	log.Info(string(jwt))
-
+	jwt, err := s.requestToken(authDetails.AccountID)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		log.Error(err)
@@ -76,4 +76,15 @@ func (s *service) validateLoginRequest(r *http.Request) (account.AuthDetails, er
 		Email:    strings.ToLower(loginRequest.Email),
 		Password: loginRequest.Password,
 	}, err
+}
+
+func (s *service) requestToken(accID uint) ([]byte, error) {
+	tokenIssuerURL := os.Getenv("TKN_ISSUER_URL")
+	url := fmt.Sprintf("%s?uid=%d", tokenIssuerURL, accID)
+	resp, err := s.client.Get(url)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return nil, err
+	}
+	tokenBytes, err := io.ReadAll(resp.Body)
+	return tokenBytes, err
 }

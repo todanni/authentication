@@ -20,6 +20,8 @@ type Config struct {
 	RMQUser     string `env:"RMQ_USER,required"`
 	RMQPassword string `env:"RMQ_PASSWORD,required"`
 	RMQHost     string `env:"RMQ_HOST,required"`
+
+	TokenIssuerURL string `env:"TKN_ISSUER_URL,required"`
 }
 
 func NewFromEnv() (Config, error) {
